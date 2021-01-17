@@ -4,8 +4,10 @@ import org.jfree.chart.ChartFactory
 import org.jfree.chart.ChartUtils
 import org.jfree.data.category.DefaultCategoryDataset
 import scala.Tuple2
+import vsst.report.Report
 import vsst.report.ReportComposer
 import java.io.File
+import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
 object KotlinUsElectionAnalyzer {
@@ -18,8 +20,17 @@ object KotlinUsElectionAnalyzer {
         }
 
         val reportComposer = ReportComposer()
-        val donaldTrumpReport = reportComposer.compose(args[0])
-        val joeBidenReport = reportComposer.compose(args[1])
+        lateinit var donaldTrumpReport: Report
+        lateinit var joeBidenReport: Report
+
+        listOf(
+            thread {
+                donaldTrumpReport = reportComposer.compose(args[0])
+            },
+            thread {
+                joeBidenReport = reportComposer.compose(args[1])
+            }
+        ).forEach { it.join() }
 
         fun saveCategoryChartAsPng(
             title: String,
