@@ -74,6 +74,6 @@ class ReportComposer {
             likesCountByContinents.collect(),
             retweetsCountByContinents.collect(),
             followersCountByContinents.collect()
-        )
+        ).apply { tweetsByContinents.unpersist() }
     }
 }
