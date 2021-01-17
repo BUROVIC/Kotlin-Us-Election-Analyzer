@@ -37,16 +37,16 @@ class ReportComposer {
 
     fun compose(candidateDataCsvFilePath: String): Report {
         val spark = SparkSession.builder().appName("KotlinUsElectionAnalyzer").orCreate
-        val tweets = spark.read()
+        val tweetsDataset = spark.read()
             .option("header", true)
             .option("multiline", true)
             .option("mode", "DROPMALFORMED")
             .option("timestampFormat", "yyyy-MM-dd HH:mm:ss")
             .schema(schema)
             .csv(candidateDataCsvFilePath)
-            .javaRDD()
 
-        val tweetsByContinents = tweets
+        val tweetsByContinents = tweetsDataset
+            .javaRDD()
             .groupBy { it.getString(Column.Continent.ordinal) }
             .filter { it._1 != null }
             .cache()
